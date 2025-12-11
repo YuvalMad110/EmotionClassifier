@@ -31,18 +31,20 @@ def parse_arguments():
     parser.add_argument('--embedding_trainable', action='store_true', help='If set, embeddings will be fine-tuned during training')
     
     # --- Model Architecture Arguments ---
-    parser.add_argument('--rnn_type', type=str, default='lstm', choices=['lstm', 'gru'], help='Type of RNN cell')
+    parser.add_argument('--rnn_type', type=str, default='gru', choices=['lstm', 'gru'], help='Type of RNN cell')
     parser.add_argument('--hidden_dim', type=int, default=256, help='Hidden dimension size')
     parser.add_argument('--n_layers', type=int, default=2, help='Number of RNN layers')
     parser.add_argument('--bidirectional', action='store_true', help='If set, uses Bidirectional RNN')
-    parser.add_argument('--dropout', type=float, default=0.5, help='Dropout probability')
+    parser.add_argument('--dropout', type=float, default=0.2, help='Dropout probability')
     
     # --- Training Hyperparameters ---
     parser.add_argument('--batch_size', type=int, default=128, help='Batch size')
     parser.add_argument('--max_seq_length', type=int, default=None, help='Max sequence length for truncation (None = no truncation)')
     parser.add_argument('--lr', type=float, default=0.001, help='Learning rate')
-    parser.add_argument('--epochs', type=int, default=15, help='Number of training epochs')
+    parser.add_argument('--epochs', type=int, default=30, help='Number of training epochs')
     parser.add_argument('--val_frequency', type=int, default=1, help='Run validation every X epochs')
+
+    parser.add_argument('--outputs_subdir', type=str, default="experiments", help='Subdirectory in outputs/ to save results')
     
     return parser.parse_args()
 
@@ -113,7 +115,8 @@ def main():
         val_loader=data['val_loader'],
         criterion=criterion,
         optimizer=optimizer,
-        config=config
+        config=config,
+        outputs_subdir=args.outputs_subdir
     )
 
     # 5. Run Training

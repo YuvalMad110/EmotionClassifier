@@ -19,7 +19,8 @@ class Trainer:
                  criterion: nn.Module, 
                  optimizer: optim.Optimizer,
                  config: Dict[str, Any],
-                 device: str = 'cuda' if torch.cuda.is_available() else 'cpu'):
+                 device: str = 'cuda' if torch.cuda.is_available() else 'cpu',
+                 outputs_subdir: str = "experiments"):
         """
         Trainer class to handle the training pipeline.
         
@@ -41,7 +42,7 @@ class Trainer:
         self.device = device
         
         # Create output directory for this run
-        self.outputs_dir = get_timestamped_logdir('outputs/experiments')
+        self.outputs_dir = get_timestamped_logdir(os.path.join('outputs', outputs_subdir))
         os.makedirs(self.outputs_dir, exist_ok=True)
         
         # Setup Logger
@@ -245,7 +246,7 @@ class Trainer:
                 self.history['val_acc'].append(val_acc)
                 
                 log_msg += f" | Val Loss: {val_loss:.4f} | Val Acc: {val_acc:.4f}"
-                error_log += "\n" + val_error_analysis
+                error_log += "\n" + " " * 29 + val_error_analysis
                 
                 # Track best validation loss
                 if val_loss < self.best_val_loss:
@@ -262,7 +263,7 @@ class Trainer:
             epoch_time = time.time() - epoch_start
             log_msg += f" | Time: {epoch_time:.1f}s"
             self.logger.info(log_msg)
-            self.logger.info(error_log)
+            self.logger.debug(error_log)
             
         # Write Final Results
         total_time = time.time() - start_time
